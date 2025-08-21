@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Pedido Especial</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #fde2e4, #fad2e1, #e2ece9);
+      color: #5c2a53;
+      font-family: "Courier New", monospace;
+      padding: 20px;
+      height: 100vh;
+      overflow: auto;
+    }
+    #terminal {
+      background: rgba(255,255,255,0.8);
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 1;
+    }
+    .line {
+      margin: 8px 0;
+    }
+    input {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid #5c2a53;
+      color: #5c2a53;
+      outline: none;
+      font-family: inherit;
+      font-size: 16px;
+      padding: 5px;
+    }
+    button {
+      margin-top: 12px;
+      padding: 12px 22px;
+      border: none;
+      border-radius: 14px;
+      background: #ff80bf;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(255,128,191,0.6);
+      animation: pulseGlow 1.5s infinite;
+      transition: transform 0.2s ease-in-out;
+      position: relative;
+      z-index: 2;
+    }
+    button:hover {
+      background: #ff5ca8;
+      transform: scale(1.15);
+      box-shadow: 0 0 25px rgba(255,92,168,0.9);
+    }
+    @keyframes pulseGlow {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(255,128,191,0.6);
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 25px rgba(255,92,168,1);
+      }
+    }
+    .heart {
+      position: fixed;
+      bottom: 0;
+      font-size: 24px;
+      color: red;
+      animation: rise 4s linear forwards;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    @keyframes rise {
+      from { transform: translateY(0) scale(0.8); opacity: 1; }
+      to { transform: translateY(-100vh) scale(1.5); opacity: 0; }
+    }
+    #noBtn {
+      position: absolute;
+    }
+    .loveImg {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .loveImg img {
+      max-width: 200px;
+      border-radius: 12px;
+    }
+    .loveImg p {
+      font-size: 22px;
+      font-weight: bold;
+      color: #d12c6a;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="terminal"></div>
+
+  <script>
+    const terminal = document.getElementById("terminal");
+
+    let funnyMessages = [
+      "Calma amor, to pensando na próxima pergunta kk...",
+      "Hmm... essa é boa, pera aí 🤔",
+      "Opa, calma que meu cérebro travou rapidinho 🧠💥",
+      "Tô inventando uma pergunta top só pra você kkk 😂",
+      "Ai ai, tá difícil pensar mas já vai 😅"
+    ];
+
+    function line(text) {
+      let div = document.createElement("div");
+      div.className = "line";
+      div.innerHTML = text;
+      terminal.appendChild(div);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function getFunnyMessage() {
+      if (funnyMessages.length === 0) return ""; 
+      const index = Math.floor(Math.random() * funnyMessages.length);
+      const msg = funnyMessages[index];
+      funnyMessages.splice(index, 1); 
+      return msg;
+    }
+
+    function askQuestion(question, expectedAnswers, callback, extraMessage="") {
+      setTimeout(() => {
+        let msg = getFunnyMessage();
+        if (msg) line("<i>" + msg + "</i>");
+        setTimeout(() => {
+          line(question);
+          let input = document.createElement("input");
+          terminal.appendChild(input);
+          input.focus();
+
+          input.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+              let answer = input.value.trim();
+
+              if (expectedAnswers.some(ans => ans.toLowerCase() === answer.toLowerCase())) {
+                input.disabled = true;
+                line("<b>✔ Correto!</b>");
+                if(extraMessage) line(extraMessage);
+                callback(true);
+              } else {
+                line("<b>✘ Hmm... tenta de novo!</b>");
+                input.value = ""; 
+              }
+            }
+          });
+        }, 2000);
+      }, 1000);
+    }
+
+    function launchHearts() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.fontSize = (20 + Math.random() * 20) + "px";
+      heart.style.animationDuration = (3 + Math.random() * 3) + "s";
+      heart.innerHTML = "❤";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 4000);
+    }
+
+    function moveNoButton() {
+      const noBtn = document.getElementById("noBtn");
+      noBtn.style.left = Math.random() * 80 + "vw";
+      noBtn.style.top = Math.random() * 80 + "vh";
+    }
+
+    function start() {
+      line("Olha só meu amor, já são 3 meses de conversa e 2 meses que a gente realmente pode dizer que tá junto… e parece que passou voando né? 😅");
+      line("É engraçado pensar em como tudo começou e ver como a gente tá agora.");
+      line("Eu curto muito estar com você, as conversas, as risadas e até os silêncios que ficam de boa.");
+      line("Quero continuar vivendo isso com você, sem pressa, mas com vontade de seguir somando. 💙");
+
+      askQuestion("Primeiro desafio: resolva o enigma: Qual é o número que, se você somar com ele mesmo e depois adicionar 2, resulta em 10?", ["4"], () => {
+        line("Excelente! Você é demais 💕");
+
+        askQuestion('Segundo desafio: complete a frase: "Meu coração bate por ___".', ["Você"], () => {
+          line("Perfeito, é isso mesmo 💖");
+
+          askQuestion("Qual o Nome de Gabriel para você?", ["Meu Amor","Vida","Amor","Xerengodengo"], () => {
+            line("Ele te ama muito viu 💕");
+
+            askQuestion("De acordo com seu irmão qual filme é ruim?", ["Como treinar seu dragão"], () => {
+              line("Não acredito que ele tentou sabotar a gente aiai kKKK 🤣");
+
+              askQuestion("Agora para a ultima e mais importante pergunta, Quem é a Xubiruba de Gabriel?", ["Eu"], () => {
+                line("Ele ama te amar e ama estar com você 💖");
+
+                setTimeout(() => {
+                  line("Meu amor, desde o instante em que nossos olhares se encontraram e minhas mãos tocaram as suas, meu coração soube que era você.");
+                  line("Você quer namorar comigo e escrevermos juntos a mais linda história de amor?");
+                  
+                  let btnSim = document.createElement("button");
+                  btnSim.innerText = "Sim ❤";
+                  btnSim.onclick = () => {
+                    line("<b>Agora estamos namorando, eu te amo demais minha xubirubaaa 💖</b>");
+                    
+                    setInterval(launchHearts, 300);
+
+                    let imgDiv = document.createElement("div");
+                    imgDiv.className = "loveImg";
+                    imgDiv.innerHTML = `
+                      <img src="49e81007903953b09bc6e620a1873864.jpg" alt="amor">
+                      <p>eu te amo meu amorzãooo 💕</p>
+                      <img src="gato.gif" alt="gatinho dançando">
+                    `; 
+                    terminal.appendChild(imgDiv);
+                  };
+                  terminal.appendChild(btnSim);
+
+                  let btnNao = document.createElement("button");
+                  btnNao.innerText = "Não 💔";
+                  btnNao.id = "noBtn";
+                  btnNao.onmouseover = moveNoButton;
+                  terminal.appendChild(btnNao);
+                }, 2000);
+              });
+            });
+          });
+        });
+      });
+    }
+
+    start();
+  </script>
+</body>
+</html>
